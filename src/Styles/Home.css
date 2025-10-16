@@ -132,6 +132,27 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 208, 132, 0.3);
 }
+.team-logo {
+  width: 24px;
+  height: 24px;
+  margin-right: 6px;
+}
+
+.league-logo {
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+}
+
+.match-card-live {
+  border: 2px solid red;
+}
+
+.status-live {
+  color: red;
+  font-weight: bold;
+}
+
 
 @media (max-width: 768px) {
   .hero-section h1 {

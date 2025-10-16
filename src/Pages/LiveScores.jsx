@@ -1,70 +1,52 @@
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import MatchCard from '../Components/MatchCard';
 import '../Styles/LiveScores.css';
 
 const LiveScores = () => {
-  // Dummy live match data - will be replaced with API-FOOTBALL data
-  const liveMatches = [
-    {
-      id: 1,
-      homeTeam: 'Manchester United',
-      awayTeam: 'Liverpool',
-      homeScore: 2,
-      awayScore: 1,
-      status: 'LIVE',
-      time: "67'",
-      league: 'Premier League'
-    },
-    {
-      id: 2,
-      homeTeam: 'Barcelona',
-      awayTeam: 'Real Madrid',
-      homeScore: 1,
-      awayScore: 1,
-      status: 'LIVE',
-      time: "54'",
-      league: 'La Liga'
-    },
-    {
-      id: 3,
-      homeTeam: 'Juventus',
-      awayTeam: 'Inter Milan',
-      homeScore: 0,
-      awayScore: 0,
-      status: 'LIVE',
-      time: "23'",
-      league: 'Serie A'
-    },
-    {
-      id: 4,
-      homeTeam: 'Bayern Munich',
-      awayTeam: 'RB Leipzig',
-      homeScore: 3,
-      awayScore: 2,
-      status: 'LIVE',
-      time: "78'",
-      league: 'Bundesliga'
-    },
-    {
-      id: 5,
-      homeTeam: 'PSG',
-      awayTeam: 'Lyon',
-      homeScore: 1,
-      awayScore: 0,
-      status: 'LIVE',
-      time: "41'",
-      league: 'Ligue 1'
-    },
-    {
-      id: 6,
-      homeTeam: 'Atletico Madrid',
-      awayTeam: 'Sevilla',
-      homeScore: 2,
-      awayScore: 2,
-      status: 'LIVE',
-      time: "89'",
-      league: 'La Liga'
-    }
-  ];
+  const [liveMatches, setLiveMatches] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch live matches from API-FOOTBALL
+  useEffect(() => {
+    const fetchLiveMatches = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/fixtures?live=all`,
+          {
+            headers: {
+              'x-apisports-key': import.meta.env.VITE_API_KEY,
+            },
+          }
+        );
+
+        // Format API response into clean objects
+        const matches = response.data.response.map((match) => ({
+          id: match.fixture.id,
+          homeTeam: match.teams.home.name,
+          awayTeam: match.teams.away.name,
+          homeLogo: match.teams.home.logo,
+          awayLogo: match.teams.away.logo,
+          homeScore: match.goals.home,
+          awayScore: match.goals.away,
+          status: match.fixture.status.short,
+          time: match.fixture.status.elapsed
+            ? `${match.fixture.status.elapsed}'`
+            : match.fixture.status.long,
+          league: match.league.name,
+          leagueLogo: match.league.logo,
+        }));
+
+        setLiveMatches(matches);
+      } catch (error) {
+        console.error('Error fetching live matches:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLiveMatches();
+  }, []);
 
   return (
     <div className="live-scores-page">
@@ -72,26 +54,35 @@ const LiveScores = () => {
         <h1>Live Matches</h1>
         <div className="live-indicator">
           <span className="live-dot"></span>
-          <span>{liveMatches.length} matches in progress</span>
+          <span>
+            {liveMatches.length > 0
+              ? `${liveMatches.length} matches in progress`
+              : 'No live matches'}
+          </span>
         </div>
       </div>
 
-      <div className="live-matches-grid">
-        {liveMatches.map(match => (
-          <MatchCard
-            key={match.id}
-            homeTeam={match.homeTeam}
-            awayTeam={match.awayTeam}
-            homeScore={match.homeScore}
-            awayScore={match.awayScore}
-            status={match.status}
-            time={match.time}
-            league={match.league}
-          />
-        ))}
-      </div>
-
-      {liveMatches.length === 0 && (
+      {loading ? (
+        <p>Loading live matches...</p>
+      ) : liveMatches.length > 0 ? (
+        <div className="live-matches-grid">
+          {liveMatches.map((match) => (
+            <MatchCard
+              key={match.id}
+              homeTeam={match.homeTeam}
+              awayTeam={match.awayTeam}
+              homeLogo={match.homeLogo}
+              awayLogo={match.awayLogo}
+              homeScore={match.homeScore}
+              awayScore={match.awayScore}
+              status={match.status}
+              time={match.time}
+              league={match.league}
+              leagueLogo={match.leagueLogo}
+            />
+          ))}
+        </div>
+      ) : (
         <div className="no-live-matches">
           <p>No live matches at the moment</p>
           <p className="subtitle">Check back soon for live updates</p>

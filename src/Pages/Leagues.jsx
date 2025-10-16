@@ -1,71 +1,162 @@
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import MatchCard from '../Components/MatchCard';
 import '../Styles/Leagues.css';
 
 const Leagues = () => {
-  // Dummy data - will be replaced with API-FOOTBALL data
-  const leagues = [
-    { id: 1, name: 'Premier League', country: 'England' },
-    { id: 2, name: 'La Liga', country: 'Spain' },
-    { id: 3, name: 'Serie A', country: 'Italy' },
-    { id: 4, name: 'Bundesliga', country: 'Germany' },
-    { id: 5, name: 'Ligue 1', country: 'France' },
-    { id: 6, name: 'Champions League', country: 'Europe' }
-  ];
+  const [leagues, setLeagues] = useState([]);
+  const [selectedLeague, setSelectedLeague] = useState(null);
+  const [matches, setMatches] = useState([]);
+  const [loadingLeagues, setLoadingLeagues] = useState(true);
+  const [loadingMatches, setLoadingMatches] = useState(false);
+  const [error, setError] = useState(null);
 
-  const leagueMatches = {
-    1: [
-      { id: 1, homeTeam: 'Arsenal', awayTeam: 'Chelsea', homeScore: 2, awayScore: 0, status: 'FT', time: 'Full Time' },
-      { id: 2, homeTeam: 'Manchester City', awayTeam: 'Tottenham', homeScore: 3, awayScore: 1, status: 'FT', time: 'Full Time' }
-    ],
-    2: [
-      { id: 3, homeTeam: 'Atletico Madrid', awayTeam: 'Sevilla', homeScore: 1, awayScore: 1, status: 'FT', time: 'Full Time' },
-      { id: 4, homeTeam: 'Valencia', awayTeam: 'Villarreal', homeScore: 0, awayScore: 2, status: 'FT', time: 'Full Time' }
-    ],
-    3: [
-      { id: 5, homeTeam: 'Juventus', awayTeam: 'AC Milan', homeScore: 2, awayScore: 2, status: 'FT', time: 'Full Time' },
-      { id: 6, homeTeam: 'Inter Milan', awayTeam: 'Napoli', homeScore: 1, awayScore: 0, status: 'FT', time: 'Full Time' }
-    ]
+  // ✅ Fetch all leagues
+  useEffect(() => {
+    const fetchLeagues = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/leagues`,
+          {
+            headers: {
+              'x-apisports-key': import.meta.env.VITE_API_KEY,
+            },
+          }
+        );
+
+        const leaguesData = response.data.response.map((item) => ({
+          id: item.league.id,
+          name: item.league.name,
+          country: item.country.name,
+          logo: item.league.logo,
+        }));
+
+        setLeagues(leaguesData.slice(0, 20)); // show top 20 leagues
+        setLoadingLeagues(false);
+      } catch (err) {
+        console.error('Error fetching leagues:', err);
+        setError('Failed to load leagues');
+        setLoadingLeagues(false);
+      }
+    };
+
+    fetchLeagues();
+  }, []);
+
+  // ✅ Fetch recent matches for selected league
+  const fetchLeagueMatches = async (leagueId) => {
+    setLoadingMatches(true);
+    setMatches([]);
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}/fixtures?league=${leagueId}&season=2024&last=10`,
+        {
+          headers: {
+            'x-apisports-key': import.meta.env.VITE_API_KEY,
+          },
+        }
+      );
+
+      const matchesData = response.data.response.map((match) => ({
+        id: match.fixture.id,
+        homeTeam: match.teams.home.name,
+        awayTeam: match.teams.away.name,
+        homeLogo: match.teams.home.logo,
+        awayLogo: match.teams.away.logo,
+        homeScore: match.goals.home,
+        awayScore: match.goals.away,
+        status: match.fixture.status.short,
+        time: match.fixture.status.elapsed
+          ? `${match.fixture.status.elapsed}'`
+          : 'FT',
+        league: match.league.name,
+        leagueLogo: match.league.logo,
+      }));
+
+      setMatches(matchesData);
+      setLoadingMatches(false);
+    } catch (err) {
+      console.error('Error fetching league matches:', err);
+      setError('Failed to load matches');
+      setLoadingMatches(false);
+    }
   };
 
-  const [selectedLeague, setSelectedLeague] = useState(null);
+  // ✅ Handle league click
+  const handleLeagueClick = (leagueId) => {
+    setSelectedLeague(leagueId);
+    fetchLeagueMatches(leagueId);
+  };
 
   return (
     <div className="leagues-page">
       <h1>Football Leagues</h1>
       <p className="page-subtitle">Select a league to view recent match results</p>
 
+      {error && <p className="error-message">{error}</p>}
+
       <div className="leagues-container">
+        {/* Left side — Leagues list */}
         <div className="leagues-list">
-          {leagues.map(league => (
-            <div
-              key={league.id}
-              className={`league-item ${selectedLeague === league.id ? 'league-item-active' : ''}`}
-              onClick={() => setSelectedLeague(league.id)}
-            >
-              <h3>{league.name}</h3>
-              <p>{league.country}</p>
-            </div>
-          ))}
+          {loadingLeagues ? (
+            <p>Loading leagues...</p>
+          ) : (
+            leagues.map((league) => (
+              <div
+                key={league.id}
+                className={`league-item ${
+                  selectedLeague === league.id ? 'league-item-active' : ''
+                }`}
+                onClick={() => handleLeagueClick(league.id)}
+              >
+                <img
+                  src={league.logo}
+                  alt={league.name}
+                  className="league-logo"
+                />
+                <div>
+                  <h3>{league.name}</h3>
+                  <p>{league.country}</p>
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
+        {/* Right side — Matches */}
         <div className="league-matches">
           {selectedLeague ? (
             <>
-              <h2>{leagues.find(l => l.id === selectedLeague)?.name} - Recent Matches</h2>
-              <div className="matches-list">
-                {leagueMatches[selectedLeague]?.map(match => (
-                  <MatchCard
-                    key={match.id}
-                    homeTeam={match.homeTeam}
-                    awayTeam={match.awayTeam}
-                    homeScore={match.homeScore}
-                    awayScore={match.awayScore}
-                    status={match.status}
-                    time={match.time}
-                  />
-                )) || <p className="no-matches">No matches available for this league</p>}
-              </div>
+              <h2>
+                {
+                  leagues.find((l) => l.id === selectedLeague)?.name
+                }{' '}
+                - Recent Matches
+              </h2>
+
+              {loadingMatches ? (
+                <p>Loading matches...</p>
+              ) : matches.length > 0 ? (
+                <div className="matches-list">
+                  {matches.map((match) => (
+                    <MatchCard
+                      key={match.id}
+                      homeTeam={match.homeTeam}
+                      awayTeam={match.awayTeam}
+                      homeLogo={match.homeLogo}
+                      awayLogo={match.awayLogo}
+                      homeScore={match.homeScore}
+                      awayScore={match.awayScore}
+                      status={match.status}
+                      time={match.time}
+                      league={match.league}
+                      leagueLogo={match.leagueLogo}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="no-matches">No matches available for this league</p>
+              )}
             </>
           ) : (
             <div className="no-selection">
