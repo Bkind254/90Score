@@ -1,24 +1,13 @@
 // src/api/api.js
 
-// Configuration
-const API_CONFIG = {
-  baseURL: import.meta.env.VITE_API_BASE_URL, // https://v3.football.api-sports.io
-  headers: {
-    // Use direct API-Football key header (not RapidAPI)
-    'x-apisports-key': import.meta.env.VITE_API_KEY,
-    'Accept': 'application/json'
-  }
-};
-
-// Helper: Fetch JSON data
+// Helper: Fetch JSON data securely through Netlify function
 const fetchData = async (endpoint) => {
   try {
-    const response = await fetch(`${API_CONFIG.baseURL}${endpoint}`, {
-      headers: API_CONFIG.headers
-    });
+    // Call your Netlify function instead of the Football API
+    const response = await fetch(`/.netlify/functions/football?endpoint=${encodeURIComponent(endpoint)}`);
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status}`);
+      throw new Error(`Function Error: ${response.status}`);
     }
 
     const data = await response.json();
@@ -39,7 +28,6 @@ export const fetchLiveMatches = async () => {
 
 /**
  * Fetch all leagues
- * Endpoint: /leagues
  */
 export const fetchLeagues = async () => {
   return fetchData('/leagues');
@@ -47,7 +35,6 @@ export const fetchLeagues = async () => {
 
 /**
  * Fetch fixtures by league and season
- * Endpoint: /fixtures?league={leagueId}&season={year}
  */
 export const fetchFixturesByLeague = async (leagueId, season = new Date().getFullYear()) => {
   return fetchData(`/fixtures?league=${leagueId}&season=${season}`);
@@ -55,7 +42,6 @@ export const fetchFixturesByLeague = async (leagueId, season = new Date().getFul
 
 /**
  * Fetch today's fixtures
- * Endpoint: /fixtures?date={YYYY-MM-DD}
  */
 export const fetchTodayMatches = async () => {
   const today = new Date().toISOString().split('T')[0];
