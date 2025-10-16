@@ -4,10 +4,10 @@ export async function handler(event) {
   const endpoint = event.queryStringParameters.endpoint;
 
   try {
-    const response = await fetch(`${process.env.VITE_API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`${process.env.API_BASE_URL}${endpoint}`, {
       headers: {
-        'x-rapidapi-key': process.env.VITE_API_KEY,
-        'x-rapidapi-host': process.env.VITE_API_HOST,
+        'x-rapidapi-key': process.env.API_KEY,
+        'x-rapidapi-host': process.env.API_HOST,
       },
     });
 
