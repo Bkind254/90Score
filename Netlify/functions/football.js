@@ -20,7 +20,10 @@ export async function handler(event) {
   } catch (error) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Server error', details: error.message }),
+      body: JSON.stringify({
+        error: 'Server error',
+        details: error.message,
+      }),
     };
   }
 }
