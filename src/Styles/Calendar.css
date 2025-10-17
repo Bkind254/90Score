@@ -1,0 +1,142 @@
+.calendar-container {
+  padding: 12px;
+}
+
+/* Layout for multiple months */
+.calendar-months {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .calendar-months {
+    flex-direction: row;
+  }
+}
+
+.calendar-month {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Caption (Month name and nav buttons) */
+.calendar-caption {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding-top: 4px;
+}
+
+.calendar-caption-label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.calendar-nav-button {
+  background: transparent;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  height: 28px;
+  width: 28px;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.calendar-nav-button:hover {
+  opacity: 1;
+}
+
+.calendar-nav-prev {
+  position: absolute;
+  left: 4px;
+}
+
+.calendar-nav-next {
+  position: absolute;
+  right: 4px;
+}
+
+.calendar-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Table and Cells */
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendar-head-row,
+.calendar-row {
+  display: flex;
+}
+
+.calendar-head-cell {
+  width: 36px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.calendar-cell {
+  height: 36px;
+  width: 36px;
+  text-align: center;
+  position: relative;
+}
+
+/* Day styles */
+.calendar-day {
+  height: 36px;
+  width: 36px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.calendar-day:hover {
+  background-color: #e6f0ff;
+}
+
+.calendar-day-selected {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.calendar-day-today {
+  background-color: #f0f0f0;
+  font-weight: 600;
+}
+
+.calendar-day-outside {
+  color: #aaa;
+  opacity: 0.5;
+}
+
+.calendar-day-disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.calendar-day-range-end,
+.calendar-day-range-middle {
+  background-color: #dceeff;
+}
+
+.calendar-day-hidden {
+  visibility: hidden;
+}

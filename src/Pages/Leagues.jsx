@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import MatchCard from '../Components/MatchCard';
+import SearchBar from "../Components/SearchBar";
 import '../Styles/Leagues.css';
 
 const Leagues = () => {
+  const navigate = useNavigate();
   const [leagues, setLeagues] = useState([]);
   const [selectedLeague, setSelectedLeague] = useState(null);
   const [matches, setMatches] = useState([]);
   const [loadingLeagues, setLoadingLeagues] = useState(true);
   const [loadingMatches, setLoadingMatches] = useState(false);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // ✅ Fetch all leagues
   useEffect(() => {
@@ -86,7 +90,14 @@ const Leagues = () => {
   const handleLeagueClick = (leagueId) => {
     setSelectedLeague(leagueId);
     fetchLeagueMatches(leagueId);
+    navigate(`/league/${leagueId}`); // Navigate to league details page
   };
+
+  const filteredLeagues = leagues.filter(
+    (league) =>
+      league.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      league.country.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="leagues-page">
@@ -95,13 +106,18 @@ const Leagues = () => {
 
       {error && <p className="error-message">{error}</p>}
 
+      {/* Search bar */}
+      <div style={{ maxWidth: '1400px', margin: '0 auto 2rem' }}>
+        <SearchBar onSearch={setSearchQuery} placeholder="Search leagues..." />
+      </div>
+
       <div className="leagues-container">
         {/* Left side — Leagues list */}
         <div className="leagues-list">
           {loadingLeagues ? (
             <p>Loading leagues...</p>
           ) : (
-            leagues.map((league) => (
+            filteredLeagues.map((league) => (
               <div
                 key={league.id}
                 className={`league-item ${
@@ -128,10 +144,7 @@ const Leagues = () => {
           {selectedLeague ? (
             <>
               <h2>
-                {
-                  leagues.find((l) => l.id === selectedLeague)?.name
-                }{' '}
-                - Recent Matches
+                {leagues.find((l) => l.id === selectedLeague)?.name} - Recent Matches
               </h2>
 
               {loadingMatches ? (

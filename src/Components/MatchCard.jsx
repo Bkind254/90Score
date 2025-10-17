@@ -1,11 +1,35 @@
 import React from "react";
+import { useNavigate } from 'react-router-dom';
 import "../Styles/MatchCard.css";
 
-const MatchCard = ({ homeTeam, awayTeam, homeLogo, awayLogo, homeScore, awayScore, status, time, league, leagueLogo }) => {
-  const isLive = status === "LIVE" || status === "1H" || status === "2H";
+const MatchCard = ({ 
+  id, 
+  homeTeam, 
+  awayTeam, 
+  homeLogo, 
+  awayLogo, 
+  homeScore, 
+  awayScore, 
+  status, 
+  time, 
+  league, 
+  leagueLogo 
+}) => {
+  const navigate = useNavigate(); // Initialize useNavigate hook
+  const isLive = status === "LIVE" || status === "1H" || status === "2H"; // Check if the match is live
+
+  // Handle card click to navigate
+  const handleClick = () => {
+    if (id) {
+      navigate(`/match/${id}`); // Navigate to match detail page
+    }
+  };
 
   return (
-    <div className={`match-card ${isLive ? "match-card-live" : ""}`}>
+    <div 
+      className={`match-card ${isLive ? "match-card-live" : ""} ${id ? "clickable" : ""}`}
+      onClick={handleClick} // Add click handler to navigate
+    >
       {/* League name and logo */}
       <div className="match-league">
         {leagueLogo && <img src={leagueLogo} alt={league} className="league-logo" />}

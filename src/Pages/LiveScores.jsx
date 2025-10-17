@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import MatchCard from '../Components/MatchCard';
+import SearchBar from '../Components/SearchBar';
 import '../Styles/LiveScores.css';
 
 const LiveScores = () => {
   const [liveMatches, setLiveMatches] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch live matches from API-FOOTBALL
   useEffect(() => {
@@ -48,6 +50,13 @@ const LiveScores = () => {
     fetchLiveMatches();
   }, []);
 
+  // Filter matches based on search query
+  const filteredMatches = liveMatches.filter((match) =>
+    match.homeTeam.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    match.awayTeam.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    match.league.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="live-scores-page">
       <div className="live-header">
@@ -55,18 +64,22 @@ const LiveScores = () => {
         <div className="live-indicator">
           <span className="live-dot"></span>
           <span>
-            {liveMatches.length > 0
-              ? `${liveMatches.length} matches in progress`
+            {filteredMatches.length > 0
+              ? `${filteredMatches.length} matches in progress`
               : 'No live matches'}
           </span>
         </div>
       </div>
 
+      <div style={{ maxWidth: '1400px', margin: '0 auto 2rem' }}>
+        <SearchBar onSearch={setSearchQuery} placeholder="Search teams or leagues..." />
+      </div>
+
       {loading ? (
         <p>Loading live matches...</p>
-      ) : liveMatches.length > 0 ? (
+      ) : filteredMatches.length > 0 ? (
         <div className="live-matches-grid">
-          {liveMatches.map((match) => (
+          {filteredMatches.map((match) => (
             <MatchCard
               key={match.id}
               homeTeam={match.homeTeam}

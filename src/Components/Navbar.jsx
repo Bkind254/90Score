@@ -15,7 +15,9 @@ const Navbar = () => {
           <li><Link to="/">Home</Link></li>
           <li><Link to="/leagues">Leagues</Link></li>
           <li><Link to="/live">Live</Link></li>
-          <li><Link to="/contact">Contact</Link></li>
+          <li><Link to="/calendar">Calendar</Link></li>
+          <li><Link to="/favorites">Favorites</Link></li>
+          {/* <li><Link to="/contact">Contact</Link></li>*/}
         </ul>
       </div>
     </nav>

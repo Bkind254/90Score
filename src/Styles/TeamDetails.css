@@ -1,0 +1,222 @@
+.team-details-page {
+  min-height: 100vh;
+  background-color: #0f0f0f;
+  color: #ffffff;
+  padding: 2rem;
+}
+
+.team-header {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #333;
+}
+
+.team-info h1 {
+  font-size: 2.5rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.team-league {
+  color: #00d084;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.favorite-button {
+  background: transparent;
+  border: 2px solid #00d084;
+  color: #00d084;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.favorite-button:hover {
+  background: #00d084;
+  color: #0f0f0f;
+}
+
+.favorite-button.active {
+  background: #00d084;
+  color: #0f0f0f;
+}
+
+.team-stats-overview {
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #00d084;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.team-section {
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+}
+
+.team-section h2 {
+  font-size: 1.8rem;
+  margin: 0 0 1.5rem 0;
+  color: #ffffff;
+}
+
+.matches-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.league-table {
+  background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 1.5rem;
+  overflow-x: auto;
+}
+
+.league-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.league-table th {
+  text-align: left;
+  padding: 1rem;
+  color: #00d084;
+  font-weight: 700;
+  border-bottom: 2px solid #333;
+}
+
+.league-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.league-table tbody tr:hover {
+  background: #1a1a1a;
+}
+
+.league-table tr.highlighted {
+  background: rgba(0, 208, 132, 0.1);
+  border-left: 3px solid #00d084;
+}
+
+.team-name-cell {
+  font-weight: 600;
+}
+
+.points-cell {
+  font-weight: 700;
+  color: #00d084;
+}
+
+.squad-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.player-card {
+  background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.player-card:hover {
+  border-color: #00d084;
+  transform: translateY(-2px);
+}
+
+.player-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #00d084;
+  min-width: 3rem;
+  text-align: center;
+}
+
+.player-info h4 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
+}
+
+.player-info p {
+  margin: 0;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 1024px) {
+  .team-stats-overview {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .team-details-page {
+    padding: 1.5rem;
+  }
+
+  .team-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .team-info h1 {
+    font-size: 2rem;
+  }
+
+  .team-stats-overview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .squad-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .league-table {
+    padding: 1rem;
+  }
+
+  .league-table th,
+  .league-table td {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+}
