@@ -1,8 +1,12 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { addFavoriteFixture, removeFavoriteFixture, isFixtureFavorite } from "../Utils/favorites";
-import { toast } from 'sonner';
-import axios from 'axios';
+import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import {
+  addFavoriteFixture,
+  removeFavoriteFixture,
+  isFixtureFavorite,
+} from "../Utils/favorites";
+import { toast } from "sonner";
+import axios from "axios";
 import "../Styles/MatchDetails.css";
 
 const MatchDetails = () => {
@@ -16,22 +20,18 @@ const MatchDetails = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if the match is a favorite
     setIsFavorite(isFixtureFavorite(Number(id)));
 
-    // Fetch match data from API-FOOTBALL
-    const fetchMatchDetails = async () => {
+    const fetchMatchData = async () => {
       try {
-        const response = await axios.get(
+        // 1️⃣ Fixture Info
+        const fixRes = await axios.get(
           `${import.meta.env.VITE_API_BASE_URL}/fixtures?id=${id}`,
-          {
-            headers: {
-              'x-apisports-key': import.meta.env.VITE_API_KEY,
-            },
-          }
+          { headers: { "x-apisports-key": import.meta.env.VITE_API_KEY } }
         );
+        const matchData = fixRes.data.response[0];
+        if (!matchData) return setLoading(false);
 
-        const matchData = response.data.response[0];
         setMatch({
           id: matchData.fixture.id,
           homeTeam: matchData.teams.home.name,
@@ -44,145 +44,139 @@ const MatchDetails = () => {
           venue: matchData.fixture.venue.name,
         });
 
-        setEvents(matchData.events);
+        // 2️⃣ Events
+        const eventsRes = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/fixtures/events?fixture=${id}`,
+          { headers: { "x-apisports-key": import.meta.env.VITE_API_KEY } }
+        );
+        setEvents(eventsRes.data.response);
+
+        // 3️⃣ Lineups
+        const lineupsRes = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/fixtures/lineups?fixture=${id}`,
+          { headers: { "x-apisports-key": import.meta.env.VITE_API_KEY } }
+        );
         setLineups({
-          home: matchData.lineups.home.map(player => player.player.name),
-          away: matchData.lineups.away.map(player => player.player.name),
+          home: lineupsRes.data.response[0]?.startXI || [],
+          away: lineupsRes.data.response[1]?.startXI || [],
         });
 
-        setStats([
-          { label: 'Possession', home: matchData.statistics.home.possession, away: matchData.statistics.away.possession },
-          { label: 'Shots', home: matchData.statistics.home.shots, away: matchData.statistics.away.shots },
-          { label: 'Shots on Target', home: matchData.statistics.home.shots_on_target, away: matchData.statistics.away.shots_on_target },
-          { label: 'Corners', home: matchData.statistics.home.corners, away: matchData.statistics.away.corners },
-          { label: 'Fouls', home: matchData.statistics.home.fouls, away: matchData.statistics.away.fouls },
-        ]);
-      } catch (error) {
-        console.error('Error fetching match details:', error);
+        // 4️⃣ Stats
+        const statsRes = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/fixtures/statistics?fixture=${id}`,
+          { headers: { "x-apisports-key": import.meta.env.VITE_API_KEY } }
+        );
+        setStats(statsRes.data.response);
+      } catch (err) {
+        console.error("Error fetching match details:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMatchDetails();
+    fetchMatchData();
   }, [id]);
 
   const toggleFavorite = () => {
+    if (!match) return;
     if (isFavorite) {
       removeFavoriteFixture(Number(id));
       setIsFavorite(false);
-      toast.success('Match removed from favorites');
+      toast.success("Removed from favorites");
     } else {
-      addFavoriteFixture({
-        id: Number(id),
-        homeTeam: match.homeTeam,
-        awayTeam: match.awayTeam,
-        homeScore: match.homeScore,
-        awayScore: match.awayScore,
-        status: match.status,
-        time: match.date,
-        league: match.league,
-      });
+      addFavoriteFixture(match);
       setIsFavorite(true);
-      toast.success('Match added to favorites');
+      toast.success("Added to favorites");
     }
   };
 
-  if (loading) {
-    return <div>Loading match details...</div>;
-  }
+  if (loading) return <div>Loading match details...</div>;
+  if (!match) return <div>No match data found</div>;
 
   return (
     <div className="match-details-page">
       <div className="top-actions">
-        <button onClick={() => navigate(-1)} className="back-button">← Back</button>
+        <button onClick={() => navigate(-1)} className="back-button">
+          ← Back
+        </button>
         <button
           onClick={toggleFavorite}
-          className={`favorite-button ${isFavorite ? 'active' : ''}`}
+          className={`favorite-button ${isFavorite ? "active" : ""}`}
         >
-          {isFavorite ? '★' : '☆'} {isFavorite ? 'Favorited' : 'Add to Favorites'}
+          {isFavorite ? "★ Favorited" : "☆ Add to Favorites"}
         </button>
       </div>
 
       <div className="match-header">
-        <div className="match-info-header">
-          <p className="league-name">{match.league}</p>
-          <p className="match-date">{match.date} • {match.venue}</p>
-        </div>
+        <p className="league-name">{match.league}</p>
+        <p className="match-date">
+          {new Date(match.date).toLocaleString()} • {match.venue}
+        </p>
+
         <div className="score-display">
-          <div className="team-display">
+          <div>
             <h2>{match.homeTeam}</h2>
-            <span className="score-large">{match.homeScore}</span>
+            <span>{match.homeScore}</span>
           </div>
           <div className="vs-divider">VS</div>
-          <div className="team-display">
+          <div>
             <h2>{match.awayTeam}</h2>
-            <span className="score-large">{match.awayScore}</span>
+            <span>{match.awayScore}</span>
           </div>
         </div>
+
         <p className="match-status-large">{match.status}</p>
       </div>
 
-      <div className="details-sections">
-        <section className="detail-section">
-          <h3>Match Events</h3>
-          <div className="events-list">
-            {events.map(event => (
-              <div key={event.id} className="event-item">
-                <span className="event-time">{event.time}</span>
-                <span className={`event-type ${event.type}`}>
-                  {event.type === 'goal' ? '⚽' : '🟨'}
-                </span>
-                <span className="event-player">{event.player}</span>
-                <span className="event-team">({event.team === 'home' ? match.homeTeam : match.awayTeam})</span>
-              </div>
-            ))}
-          </div>
-        </section>
+      <section className="detail-section">
+        <h3>Match Events</h3>
+        {events.length ? (
+          events.map((e, i) => (
+            <p key={i}>
+              {e.time.elapsed}' {e.type} – {e.player.name} ({e.team.name})
+            </p>
+          ))
+        ) : (
+          <p>No events</p>
+        )}
+      </section>
 
-        <section className="detail-section">
-          <h3>Lineups</h3>
-          <div className="lineups-grid">
-            <div className="lineup-column">
-              <h4>{match.homeTeam}</h4>
-              <ul>
-                {lineups.home.map((player, idx) => (
-                  <li key={idx}>{player}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="lineup-column">
-              <h4>{match.awayTeam}</h4>
-              <ul>
-                {lineups.away.map((player, idx) => (
-                  <li key={idx}>{player}</li>
-                ))}
-              </ul>
-            </div>
+      <section className="detail-section">
+        <h3>Lineups</h3>
+        <div className="lineups">
+          <div>
+            <h4>{match.homeTeam}</h4>
+            <ul>
+              {lineups.home.map((p, i) => (
+                <li key={i}>{p.player.name}</li>
+              ))}
+            </ul>
           </div>
-        </section>
+          <div>
+            <h4>{match.awayTeam}</h4>
+            <ul>
+              {lineups.away.map((p, i) => (
+                <li key={i}>{p.player.name}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
 
-        <section className="detail-section">
-          <h3>Match Statistics</h3>
-          <div className="stats-list">
-            {stats.map((stat, idx) => (
-              <div key={idx} className="stat-item">
-                <div className="stat-values">
-                  <span className="stat-home">{stat.home}</span>
-                  <span className="stat-label">{stat.label}</span>
-                  <span className="stat-away">{stat.away}</span>
-                </div>
-                <div className="stat-bar">
-                  <div
-                    className="stat-bar-home"
-                    style={{ width: `${(stat.home / (stat.home + stat.away)) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
+      <section className="detail-section">
+        <h3>Statistics</h3>
+        {stats.length ? (
+          stats[0].statistics.map((s, i) => (
+            <div key={i} className="stat-row">
+              <span>{s.value}</span>
+              <span>{s.type}</span>
+              <span>{stats[1]?.statistics[i]?.value}</span>
+            </div>
+          ))
+        ) : (
+          <p>No stats available</p>
+        )}
+      </section>
     </div>
   );
 };

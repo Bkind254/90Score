@@ -5,6 +5,7 @@
   padding: 2rem;
 }
 
+/* Top buttons */
 .top-actions {
   display: flex;
   justify-content: space-between;
@@ -29,15 +30,14 @@
 .favorite-button:hover {
   background: #00d084;
   color: #0f0f0f;
-  border-color: #00d084;
 }
 
 .favorite-button.active {
   background: #00d084;
   color: #0f0f0f;
-  border-color: #00d084;
 }
 
+/* Header */
 .match-header {
   max-width: 1200px;
   margin: 0 auto 3rem;
@@ -53,15 +53,15 @@
   font-size: 0.9rem;
   font-weight: 600;
   text-transform: uppercase;
-  margin: 0 0 0.5rem 0;
+  margin-bottom: 0.5rem;
 }
 
 .match-date {
   color: #888;
   font-size: 0.9rem;
-  margin: 0;
 }
 
+/* Score Display */
 .score-display {
   display: flex;
   justify-content: center;
@@ -98,9 +98,10 @@
   color: #888;
   font-size: 1rem;
   font-weight: 600;
-  margin: 1rem 0 0 0;
+  margin-top: 1rem;
 }
 
+/* Sections */
 .details-sections {
   max-width: 1200px;
   margin: 0 auto;
@@ -118,10 +119,11 @@
 
 .detail-section h3 {
   font-size: 1.5rem;
-  margin: 0 0 1.5rem 0;
+  margin-bottom: 1.5rem;
   color: #00d084;
 }
 
+/* Events */
 .events-list {
   display: flex;
   flex-direction: column;
@@ -155,6 +157,7 @@
   color: #888;
 }
 
+/* Lineups */
 .lineups-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -163,7 +166,7 @@
 
 .lineup-column h4 {
   font-size: 1.2rem;
-  margin: 0 0 1rem 0;
+  margin-bottom: 1rem;
   color: #00d084;
   text-align: center;
 }
@@ -182,6 +185,7 @@
   text-align: center;
 }
 
+/* Stats */
 .stats-list {
   display: flex;
   flex-direction: column;
@@ -225,6 +229,7 @@
   transition: width 0.3s ease;
 }
 
+/* Responsive */
 @media (max-width: 768px) {
   .match-details-page {
     padding: 1.5rem;

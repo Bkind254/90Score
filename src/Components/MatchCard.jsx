@@ -1,61 +1,52 @@
 import React from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import "../Styles/MatchCard.css";
 
-const MatchCard = ({ 
-  id, 
-  homeTeam, 
-  awayTeam, 
-  homeLogo, 
-  awayLogo, 
-  homeScore, 
-  awayScore, 
-  status, 
-  time, 
-  league, 
-  leagueLogo 
-}) => {
-  const navigate = useNavigate(); // Initialize useNavigate hook
-  const isLive = status === "LIVE" || status === "1H" || status === "2H"; // Check if the match is live
+const MatchCard = ({ fixture }) => {
+  const navigate = useNavigate();
 
-  // Handle card click to navigate
-  const handleClick = () => {
-    if (id) {
-      navigate(`/match/${id}`); // Navigate to match detail page
-    }
-  };
+  if (!fixture) return null;
+
+  const id = fixture.fixture.id;
+  const home = fixture.teams.home;
+  const away = fixture.teams.away;
+  const league = fixture.league;
+
+  const isLive =
+    fixture.fixture.status.short === "LIVE" ||
+    fixture.fixture.status.short === "1H" ||
+    fixture.fixture.status.short === "2H";
 
   return (
-    <div 
-      className={`match-card ${isLive ? "match-card-live" : ""} ${id ? "clickable" : ""}`}
-      onClick={handleClick} // Add click handler to navigate
+    <div
+      className={`match-card ${isLive ? "match-card-live" : ""}`}
+      onClick={() => navigate(`/match/${id}`)}
     >
-      {/* League name and logo */}
       <div className="match-league">
-        {leagueLogo && <img src={leagueLogo} alt={league} className="league-logo" />}
-        <span>{league}</span>
+        {league.logo && <img src={league.logo} alt={league.name} className="league-logo" />}
+        <span>{league.name}</span>
       </div>
 
-      {/* Teams */}
       <div className="match-teams">
         <div className="match-team">
-          {homeLogo && <img src={homeLogo} alt={homeTeam} className="team-logo" />}
-          <span className="team-name">{homeTeam}</span>
-          <span className="team-score">{homeScore !== null ? homeScore : "-"}</span>
+          <img src={home.logo} alt={home.name} className="team-logo" />
+          <span className="team-name">{home.name}</span>
+          <span className="team-score">{fixture.goals.home ?? "-"}</span>
         </div>
         <div className="match-team">
-          {awayLogo && <img src={awayLogo} alt={awayTeam} className="team-logo" />}
-          <span className="team-name">{awayTeam}</span>
-          <span className="team-score">{awayScore !== null ? awayScore : "-"}</span>
+          <img src={away.logo} alt={away.name} className="team-logo" />
+          <span className="team-name">{away.name}</span>
+          <span className="team-score">{fixture.goals.away ?? "-"}</span>
         </div>
       </div>
 
-      {/* Match info */}
       <div className="match-info">
         <span className={`match-status ${isLive ? "status-live" : ""}`}>
-          {isLive ? "LIVE" : status}
+          {isLive ? "LIVE" : fixture.fixture.status.short}
         </span>
-        <span className="match-time">{time}</span>
+        <span className="match-time">
+          {new Date(fixture.fixture.date).toLocaleString()}
+        </span>
       </div>
     </div>
   );
