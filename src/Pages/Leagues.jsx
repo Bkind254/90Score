@@ -90,7 +90,7 @@ const Leagues = () => {
   const handleLeagueClick = (leagueId) => {
     setSelectedLeague(leagueId);
     fetchLeagueMatches(leagueId);
-    navigate(`/league/${leagueId}`); // Navigate to league details page
+    //navigate(`/league/${leagueId}`);  Navigate to league details page
   };
 
   const filteredLeagues = leagues.filter(

@@ -10,7 +10,8 @@ import NotFound from "./Pages/NotFound";
 import Footer from "./Components/Footer";
 import Favorites from "./Pages/Favorites";
 import MatchDetails from "./Pages/MatchDetails";
-import TeamDetails from "./Pages/MatchDetails";
+import TeamDetails from "./Pages/TeamDetails"; 
+import LeagueDetails from "./Pages/LeagueDetails";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/match/:id" element={<MatchDetails />} />
           <Route path="/team/:id" element={<TeamDetails />} />
+          <Route path="/league/:id" element={<LeagueDetails />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

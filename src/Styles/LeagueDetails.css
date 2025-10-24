@@ -1,0 +1,182 @@
+.league-details-page {
+  min-height: 100vh;
+  background-color: #0f0f0f;
+  color: #ffffff;
+  padding: 2rem;
+}
+
+/* Header */
+.league-header {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #333;
+}
+
+.league-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.league-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 50%;
+  background-color: #1f1f1f;
+  padding: 0.5rem;
+  border: 1px solid #333;
+}
+
+.league-info h1 {
+  font-size: 2.2rem;
+  margin: 0;
+}
+
+.league-info p {
+  margin: 0.3rem 0 0;
+  color: #00d084;
+  font-weight: 600;
+}
+
+/* Matches Section */
+.league-section {
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+}
+
+.league-section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.matches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+/* Match card hover styling consistency */
+.match-card {
+  cursor: pointer;
+  background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+.match-card:hover {
+  transform: translateY(-4px);
+  border-color: #00d084;
+}
+
+/* Empty / Loading states */
+.loading-message,
+.no-matches {
+  text-align: center;
+  color: #aaa;
+  font-size: 1rem;
+  margin-top: 2rem;
+}
+
+/* Table styling for standings (optional future section) */
+.standings-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+  border: 1px solid #333;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.standings-table th {
+  padding: 1rem;
+  text-align: left;
+  color: #00d084;
+  font-weight: 700;
+  border-bottom: 2px solid #333;
+}
+
+.standings-table td {
+  padding: 0.9rem;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.standings-table tbody tr:hover {
+  background: #1a1a1a;
+}
+
+/* Buttons */
+.back-button {
+  background: transparent;
+  border: 2px solid #00d084;
+  color: #00d084;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background: #00d084;
+  color: #0f0f0f;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .matches-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .league-details-page {
+    padding: 1.5rem;
+  }
+
+  .league-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .league-logo {
+    width: 50px;
+    height: 50px;
+  }
+
+  .league-info h1 {
+    font-size: 1.8rem;
+  }
+
+  .matches-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .back-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .league-info h1 {
+    font-size: 1.5rem;
+  }
+
+  .league-section h2 {
+    font-size: 1.3rem;
+  }
+
+  .league-logo {
+    width: 45px;
+    height: 45px;
+  }
+}

@@ -13,7 +13,7 @@ const MatchDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [isFavorite, setIsFavorite] = useState(false);
-  const [match, setMatch] = useState(null);
+  const [fixture, setFixture] = useState(null);
   const [events, setEvents] = useState([]);
   const [lineups, setLineups] = useState({ home: [], away: [] });
   const [stats, setStats] = useState([]);
@@ -32,17 +32,7 @@ const MatchDetails = () => {
         const matchData = fixRes.data.response[0];
         if (!matchData) return setLoading(false);
 
-        setMatch({
-          id: matchData.fixture.id,
-          homeTeam: matchData.teams.home.name,
-          awayTeam: matchData.teams.away.name,
-          homeScore: matchData.goals.home,
-          awayScore: matchData.goals.away,
-          status: matchData.fixture.status.short,
-          league: matchData.league.name,
-          date: matchData.fixture.date,
-          venue: matchData.fixture.venue.name,
-        });
+        setFixture(matchData); // ✅ store the full API fixture object
 
         // 2️⃣ Events
         const eventsRes = await axios.get(
@@ -78,20 +68,22 @@ const MatchDetails = () => {
   }, [id]);
 
   const toggleFavorite = () => {
-    if (!match) return;
+    if (!fixture) return;
     if (isFavorite) {
       removeFavoriteFixture(Number(id));
       setIsFavorite(false);
       toast.success("Removed from favorites");
     } else {
-      addFavoriteFixture(match);
+      addFavoriteFixture(fixture); // ✅ store the full fixture
       setIsFavorite(true);
       toast.success("Added to favorites");
     }
   };
 
   if (loading) return <div>Loading match details...</div>;
-  if (!match) return <div>No match data found</div>;
+  if (!fixture) return <div>No match data found</div>;
+
+  const match = fixture; // alias for readability
 
   return (
     <div className="match-details-page">
@@ -108,24 +100,24 @@ const MatchDetails = () => {
       </div>
 
       <div className="match-header">
-        <p className="league-name">{match.league}</p>
+        <p className="league-name">{match.league.name}</p>
         <p className="match-date">
-          {new Date(match.date).toLocaleString()} • {match.venue}
+          {new Date(match.fixture.date).toLocaleString()} • {match.fixture.venue.name}
         </p>
 
         <div className="score-display">
           <div>
-            <h2>{match.homeTeam}</h2>
-            <span>{match.homeScore}</span>
+            <h2>{match.teams.home.name}</h2>
+            <span>{match.goals.home}</span>
           </div>
           <div className="vs-divider">VS</div>
           <div>
-            <h2>{match.awayTeam}</h2>
-            <span>{match.awayScore}</span>
+            <h2>{match.teams.away.name}</h2>
+            <span>{match.goals.away}</span>
           </div>
         </div>
 
-        <p className="match-status-large">{match.status}</p>
+        <p className="match-status-large">{match.fixture.status.short}</p>
       </div>
 
       <section className="detail-section">
@@ -145,7 +137,7 @@ const MatchDetails = () => {
         <h3>Lineups</h3>
         <div className="lineups">
           <div>
-            <h4>{match.homeTeam}</h4>
+            <h4>{match.teams.home.name}</h4>
             <ul>
               {lineups.home.map((p, i) => (
                 <li key={i}>{p.player.name}</li>
@@ -153,7 +145,7 @@ const MatchDetails = () => {
             </ul>
           </div>
           <div>
-            <h4>{match.awayTeam}</h4>
+            <h4>{match.teams.away.name}</h4>
             <ul>
               {lineups.away.map((p, i) => (
                 <li key={i}>{p.player.name}</li>

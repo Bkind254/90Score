@@ -8,7 +8,6 @@ const Home = () => {
   const [featuredMatches, setFeaturedMatches] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch live or recent matches from API-FOOTBALL
   const fetchMatches = async () => {
     try {
       const response = await axios.get(
@@ -21,24 +20,8 @@ const Home = () => {
         }
       );
 
-      // Extract and format data
-      const matches = response.data.response.map((match) => ({
-        id: match.fixture.id,
-        homeTeam: match.teams.home.name,
-        awayTeam: match.teams.away.name,
-        homeLogo: match.teams.home.logo,
-        awayLogo: match.teams.away.logo,
-        homeScore: match.goals.home,
-        awayScore: match.goals.away,
-        status: match.fixture.status.short,
-        time: match.fixture.status.elapsed
-          ? `${match.fixture.status.elapsed}'`
-          : "FT",
-        league: match.league.name,
-        leagueLogo: match.league.logo,
-      }));
-
-      setFeaturedMatches(matches.slice(0, 6)); // show top 6
+      const matches = response.data.response;
+      setFeaturedMatches(matches.slice(0, 6)); // ✅ keep full fixture object
       setLoading(false);
     } catch (error) {
       console.error("Error fetching matches:", error);
@@ -46,7 +29,6 @@ const Home = () => {
     }
   };
 
-  // Run once on mount + refresh every 30s
   useEffect(() => {
     fetchMatches();
     const interval = setInterval(fetchMatches, 30000);
@@ -62,13 +44,6 @@ const Home = () => {
 
   return (
     <div className="home-page">
-      {/* Hero Section */}
-      <section className="hero-section">
-        <h1>Welcome to 90Score</h1>
-        <p>Your ultimate destination for live football scores and updates</p>
-      </section>
-
-      {/* Live Matches Section */}
       <section className="featured-section">
         <div className="section-header">
           <h2>Live & Recent Matches</h2>
@@ -81,20 +56,8 @@ const Home = () => {
           <p>Loading matches...</p>
         ) : featuredMatches.length > 0 ? (
           <div className="matches-grid">
-            {featuredMatches.map((match) => (
-              <MatchCard
-                key={match.id}
-                homeTeam={match.homeTeam}
-                awayTeam={match.awayTeam}
-                homeLogo={match.homeLogo}
-                awayLogo={match.awayLogo}
-                homeScore={match.homeScore}
-                awayScore={match.awayScore}
-                status={match.status}
-                time={match.time}
-                league={match.league}
-                leagueLogo={match.leagueLogo}
-              />
+            {featuredMatches.map((fixture) => (
+              <MatchCard key={fixture.fixture.id} fixture={fixture} /> // ✅ correct
             ))}
           </div>
         ) : (
@@ -102,7 +65,6 @@ const Home = () => {
         )}
       </section>
 
-      {/* Leagues Section */}
       <section className="leagues-section">
         <div className="section-header">
           <h2>Featured Leagues</h2>
