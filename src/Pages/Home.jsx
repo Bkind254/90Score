@@ -14,7 +14,7 @@ const Home = () => {
         `${import.meta.env.VITE_API_BASE_URL}/fixtures?live=all`,
         {
           headers: {
-            "x-apisports-key": import.meta.env.VITE_API_KEY,
+            "x-apisports-key": import.meta.env.API_KEY,
             "x-rapidapi-host": import.meta.env.VITE_API_HOST,
           },
         }

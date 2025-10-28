@@ -29,7 +29,7 @@ const TeamDetails = () => {
           `${import.meta.env.VITE_API_BASE_URL}/teams?id=${id}`,
           {
             headers: {
-              "x-apisports-key": import.meta.env.VITE_API_KEY,
+              "x-apisports-key": import.meta.env.API_KEY,
             },
           }
         );
@@ -41,7 +41,7 @@ const TeamDetails = () => {
           `${import.meta.env.VITE_API_BASE_URL}/fixtures?team=${id}&next=5`,
           {
             headers: {
-              "x-apisports-key": import.meta.env.VITE_API_KEY,
+              "x-apisports-key": import.meta.env.API_KEY,
             },
           }
         );
@@ -54,7 +54,7 @@ const TeamDetails = () => {
             `${import.meta.env.VITE_API_BASE_URL}/standings?league=${leagueId}&season=2024`,
             {
               headers: {
-                "x-apisports-key": import.meta.env.VITE_API_KEY,
+                "x-apisports-key": import.meta.env.API_KEY,
               },
             }
           );
@@ -66,7 +66,7 @@ const TeamDetails = () => {
           `${import.meta.env.VITE_API_BASE_URL}/players/squads?team=${id}`,
           {
             headers: {
-              "x-apisports-key": import.meta.env.VITE_API_KEY,
+              "x-apisports-key": import.meta.env.API_KEY,
             },
           }
         );

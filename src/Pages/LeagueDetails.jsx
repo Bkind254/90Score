@@ -14,7 +14,7 @@ const LeagueDetails = () => {
       try {
         const res = await axios.get(
           `${import.meta.env.VITE_API_BASE_URL}/fixtures?league=${id}&season=2024&last=10`,
-          { headers: { "x-apisports-key": import.meta.env.VITE_API_KEY } }
+          { headers: { "x-apisports-key": import.meta.env.API_KEY } }
         );
         setMatches(res.data.response);
       } catch (err) {

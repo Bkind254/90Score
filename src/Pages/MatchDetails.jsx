@@ -27,7 +27,7 @@ const MatchDetails = () => {
         // 1️⃣ Fixture Info
         const fixRes = await axios.get(
           `${import.meta.env.VITE_API_BASE_URL}/fixtures?id=${id}`,
-          { headers: { "x-apisports-key": import.meta.env.VITE_API_KEY } }
+          { headers: { "x-apisports-key": import.meta.env.API_KEY } }
         );
         const matchData = fixRes.data.response[0];
         if (!matchData) return setLoading(false);
@@ -37,14 +37,14 @@ const MatchDetails = () => {
         // 2️⃣ Events
         const eventsRes = await axios.get(
           `${import.meta.env.VITE_API_BASE_URL}/fixtures/events?fixture=${id}`,
-          { headers: { "x-apisports-key": import.meta.env.VITE_API_KEY } }
+          { headers: { "x-apisports-key": import.meta.env.API_KEY } }
         );
         setEvents(eventsRes.data.response);
 
         // 3️⃣ Lineups
         const lineupsRes = await axios.get(
           `${import.meta.env.VITE_API_BASE_URL}/fixtures/lineups?fixture=${id}`,
-          { headers: { "x-apisports-key": import.meta.env.VITE_API_KEY } }
+          { headers: { "x-apisports-key": import.meta.env.API_KEY } }
         );
         setLineups({
           home: lineupsRes.data.response[0]?.startXI || [],
@@ -54,7 +54,7 @@ const MatchDetails = () => {
         // 4️⃣ Stats
         const statsRes = await axios.get(
           `${import.meta.env.VITE_API_BASE_URL}/fixtures/statistics?fixture=${id}`,
-          { headers: { "x-apisports-key": import.meta.env.VITE_API_KEY } }
+          { headers: { "x-apisports-key": import.meta.env.API_KEY } }
         );
         setStats(statsRes.data.response);
       } catch (err) {
