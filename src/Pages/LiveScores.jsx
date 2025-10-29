@@ -1,57 +1,31 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+// src/Pages/LiveScores.jsx
+import { useState } from 'react';
+import { useFootball } from '../api/useFootball';
 import MatchCard from '../Components/MatchCard';
 import SearchBar from '../Components/SearchBar';
 import '../Styles/LiveScores.css';
 
 const LiveScores = () => {
-  const [liveMatches, setLiveMatches] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const { data: rawMatches = [], isLoading } = useFootball('/fixtures?live=all', {
+    refetchInterval: 30000,
+  });
 
-  // Fetch live matches from API-FOOTBALL
-  useEffect(() => {
-    const fetchLiveMatches = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/fixtures?live=all`,
-          {
-            headers: {
-              'x-apisports-key': import.meta.env.API_KEY,
-            },
-          }
-        );
+  const matches = rawMatches.map(match => ({
+    id: match.fixture.id,
+    homeTeam: match.teams.home.name,
+    awayTeam: match.teams.away.name,
+    homeLogo: match.teams.home.logo,
+    awayLogo: match.teams.away.logo,
+    homeScore: match.goals.home,
+    awayScore: match.goals.away,
+    status: match.fixture.status.short,
+    time: match.fixture.status.elapsed ? `${match.fixture.status.elapsed}'` : match.fixture.status.long,
+    league: match.league.name,
+    leagueLogo: match.league.logo,
+  }));
 
-        // Format API response into clean objects
-        const matches = response.data.response.map((match) => ({
-          id: match.fixture.id,
-          homeTeam: match.teams.home.name,
-          awayTeam: match.teams.away.name,
-          homeLogo: match.teams.home.logo,
-          awayLogo: match.teams.away.logo,
-          homeScore: match.goals.home,
-          awayScore: match.goals.away,
-          status: match.fixture.status.short,
-          time: match.fixture.status.elapsed
-            ? `${match.fixture.status.elapsed}'`
-            : match.fixture.status.long,
-          league: match.league.name,
-          leagueLogo: match.league.logo,
-        }));
-
-        setLiveMatches(matches);
-      } catch (error) {
-        console.error('Error fetching live matches:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchLiveMatches();
-  }, []);
-
-  // Filter matches based on search query
-  const filteredMatches = liveMatches.filter((match) =>
+  const filteredMatches = matches.filter(match =>
     match.homeTeam.toLowerCase().includes(searchQuery.toLowerCase()) ||
     match.awayTeam.toLowerCase().includes(searchQuery.toLowerCase()) ||
     match.league.toLowerCase().includes(searchQuery.toLowerCase())
@@ -75,11 +49,11 @@ const LiveScores = () => {
         <SearchBar onSearch={setSearchQuery} placeholder="Search teams or leagues..." />
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <p>Loading live matches...</p>
       ) : filteredMatches.length > 0 ? (
         <div className="live-matches-grid">
-          {filteredMatches.map((match) => (
+          {filteredMatches.map(match => (
             <MatchCard
               key={match.id}
               homeTeam={match.homeTeam}

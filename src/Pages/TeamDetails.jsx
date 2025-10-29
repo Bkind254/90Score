@@ -1,3 +1,4 @@
+// src/Pages/TeamDetails.jsx
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import MatchCard from "../Components/MatchCard";
@@ -25,52 +26,33 @@ const TeamDetails = () => {
 
     const fetchTeamDetails = async () => {
       try {
+        // ✅ Team Info
         const teamRes = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/teams?id=${id}`,
-          {
-            headers: {
-              "x-apisports-key": import.meta.env.API_KEY,
-            },
-          }
+          `/.Netlify/functions/football?endpoint=${encodeURIComponent(`/teams?id=${id}`)}`
         );
         const teamData = teamRes.data.response[0];
         setTeam(teamData.team);
 
-        // Fetch fixtures (upcoming)
+        // ✅ Upcoming Matches
         const matchesRes = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/fixtures?team=${id}&next=5`,
-          {
-            headers: {
-              "x-apisports-key": import.meta.env.API_KEY,
-            },
-          }
+          `/.Netlify/functions/football?endpoint=${encodeURIComponent(`/fixtures?team=${id}&next=5`)}`
         );
         setUpcomingMatches(matchesRes.data.response);
 
-        // Fetch league standings
+        // ✅ League Table
         if (matchesRes.data.response.length > 0) {
           const leagueId = matchesRes.data.response[0].league.id;
           const standingsRes = await axios.get(
-            `${import.meta.env.VITE_API_BASE_URL}/standings?league=${leagueId}&season=2024`,
-            {
-              headers: {
-                "x-apisports-key": import.meta.env.API_KEY,
-              },
-            }
+            `/.Netlify/functions/football?endpoint=${encodeURIComponent(`/standings?league=${leagueId}&season=2024`)}`
           );
           setLeagueTable(standingsRes.data.response[0].league.standings[0]);
         }
 
-        // Fetch squad
+        // ✅ Squad
         const squadRes = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/players/squads?team=${id}`,
-          {
-            headers: {
-              "x-apisports-key": import.meta.env.API_KEY,
-            },
-          }
+          `/.Netlify/functions/football?endpoint=${encodeURIComponent(`/players/squads?team=${id}`)}`
         );
-        setSquad(squadRes.data.response[0].players);
+        setSquad(squadRes.data.response[0].players || []);
       } catch (err) {
         console.error("Error fetching team details:", err);
       } finally {

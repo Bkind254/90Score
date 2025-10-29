@@ -1,3 +1,4 @@
+// src/Pages/MatchDetails.jsx
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import {
@@ -24,37 +25,33 @@ const MatchDetails = () => {
 
     const fetchMatchData = async () => {
       try {
-        // 1️⃣ Fixture Info
+        // ✅ 1. Fixture Info
         const fixRes = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/fixtures?id=${id}`,
-          { headers: { "x-apisports-key": import.meta.env.API_KEY } }
+          `/.Netlify/functions/football?endpoint=${encodeURIComponent(`/fixtures?id=${id}`)}`
         );
         const matchData = fixRes.data.response[0];
         if (!matchData) return setLoading(false);
 
-        setFixture(matchData); // ✅ store the full API fixture object
+        setFixture(matchData);
 
-        // 2️⃣ Events
+        // ✅ 2. Events
         const eventsRes = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/fixtures/events?fixture=${id}`,
-          { headers: { "x-apisports-key": import.meta.env.API_KEY } }
+          `/.Netlify/functions/football?endpoint=${encodeURIComponent(`/fixtures/events?fixture=${id}`)}`
         );
         setEvents(eventsRes.data.response);
 
-        // 3️⃣ Lineups
+        // ✅ 3. Lineups
         const lineupsRes = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/fixtures/lineups?fixture=${id}`,
-          { headers: { "x-apisports-key": import.meta.env.API_KEY } }
+          `/.Netlify/functions/football?endpoint=${encodeURIComponent(`/fixtures/lineups?fixture=${id}`)}`
         );
         setLineups({
           home: lineupsRes.data.response[0]?.startXI || [],
           away: lineupsRes.data.response[1]?.startXI || [],
         });
 
-        // 4️⃣ Stats
+        // ✅ 4. Stats
         const statsRes = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/fixtures/statistics?fixture=${id}`,
-          { headers: { "x-apisports-key": import.meta.env.API_KEY } }
+          `/.Netlify/functions/football?endpoint=${encodeURIComponent(`/fixtures/statistics?fixture=${id}`)}`
         );
         setStats(statsRes.data.response);
       } catch (err) {
@@ -74,7 +71,7 @@ const MatchDetails = () => {
       setIsFavorite(false);
       toast.success("Removed from favorites");
     } else {
-      addFavoriteFixture(fixture); // ✅ store the full fixture
+      addFavoriteFixture(fixture);
       setIsFavorite(true);
       toast.success("Added to favorites");
     }
@@ -83,7 +80,7 @@ const MatchDetails = () => {
   if (loading) return <div>Loading match details...</div>;
   if (!fixture) return <div>No match data found</div>;
 
-  const match = fixture; // alias for readability
+  const match = fixture;
 
   return (
     <div className="match-details-page">

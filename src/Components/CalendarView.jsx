@@ -18,7 +18,7 @@ const CalendarView = () => {
 
       const formattedDate = format(date, "yyyy-MM-dd");
       const response = await fetch(
-        `/.netlify/functions/football?endpoint=fixtures&date=${formattedDate}`
+         `/.netlify/functions/football?endpoint=${encodeURIComponent(`/fixtures?date=${formattedDate}`)}`
       );
 
       if (!response.ok) {
