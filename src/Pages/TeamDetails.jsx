@@ -28,14 +28,14 @@ const TeamDetails = () => {
       try {
         // ✅ Team Info
         const teamRes = await axios.get(
-          `/.Netlify/functions/football?endpoint=${encodeURIComponent(`/teams?id=${id}`)}`
+          `/.netlify/functions/football?endpoint=${encodeURIComponent(`/teams?id=${id}`)}`
         );
         const teamData = teamRes.data.response[0];
         setTeam(teamData.team);
 
         // ✅ Upcoming Matches
         const matchesRes = await axios.get(
-          `/.Netlify/functions/football?endpoint=${encodeURIComponent(`/fixtures?team=${id}&next=5`)}`
+          `/.netlify/functions/football?endpoint=${encodeURIComponent(`/fixtures?team=${id}&next=5`)}`
         );
         setUpcomingMatches(matchesRes.data.response);
 
@@ -43,14 +43,14 @@ const TeamDetails = () => {
         if (matchesRes.data.response.length > 0) {
           const leagueId = matchesRes.data.response[0].league.id;
           const standingsRes = await axios.get(
-            `/.Netlify/functions/football?endpoint=${encodeURIComponent(`/standings?league=${leagueId}&season=2024`)}`
+            `/.netlify/functions/football?endpoint=${encodeURIComponent(`/standings?league=${leagueId}&season=2024`)}`
           );
           setLeagueTable(standingsRes.data.response[0].league.standings[0]);
         }
 
         // ✅ Squad
         const squadRes = await axios.get(
-          `/.Netlify/functions/football?endpoint=${encodeURIComponent(`/players/squads?team=${id}`)}`
+          `/.netlify/functions/football?endpoint=${encodeURIComponent(`/players/squads?team=${id}`)}`
         );
         setSquad(squadRes.data.response[0].players || []);
       } catch (err) {

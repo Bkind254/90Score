@@ -27,7 +27,7 @@ const MatchDetails = () => {
       try {
         // ✅ 1. Fixture Info
         const fixRes = await axios.get(
-          `/.Netlify/functions/football?endpoint=${encodeURIComponent(`/fixtures?id=${id}`)}`
+          `/.netlify/functions/football?endpoint=${encodeURIComponent(`/fixtures?id=${id}`)}`
         );
         const matchData = fixRes.data.response[0];
         if (!matchData) return setLoading(false);
@@ -36,13 +36,13 @@ const MatchDetails = () => {
 
         // ✅ 2. Events
         const eventsRes = await axios.get(
-          `/.Netlify/functions/football?endpoint=${encodeURIComponent(`/fixtures/events?fixture=${id}`)}`
+          `/.netlify/functions/football?endpoint=${encodeURIComponent(`/fixtures/events?fixture=${id}`)}`
         );
         setEvents(eventsRes.data.response);
 
         // ✅ 3. Lineups
         const lineupsRes = await axios.get(
-          `/.Netlify/functions/football?endpoint=${encodeURIComponent(`/fixtures/lineups?fixture=${id}`)}`
+          `/.netlify/functions/football?endpoint=${encodeURIComponent(`/fixtures/lineups?fixture=${id}`)}`
         );
         setLineups({
           home: lineupsRes.data.response[0]?.startXI || [],
@@ -99,7 +99,7 @@ const MatchDetails = () => {
       <div className="match-header">
         <p className="league-name">{match.league.name}</p>
         <p className="match-date">
-          {new Date(match.fixture.date).toLocaleString()} • {match.fixture.venue.name}
+          {new Date(match.fixture.date).toLocaleString()} • {match.fixture.venue?.name ?? "Unknown Venue"}
         </p>
 
         <div className="score-display">
@@ -159,7 +159,7 @@ const MatchDetails = () => {
             <div key={i} className="stat-row">
               <span>{s.value}</span>
               <span>{s.type}</span>
-              <span>{stats[1]?.statistics[i]?.value}</span>
+              <span>{stats[1]?.statistics?.[i]?.value ?? "-"}</span>
             </div>
           ))
         ) : (

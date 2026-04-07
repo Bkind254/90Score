@@ -1,3 +1,4 @@
+// src/Components/CalendarView.jsx
 import { useState, useEffect } from "react";
 import Calendar from "./ui/Calendar";
 import { format } from "date-fns";
@@ -10,36 +11,18 @@ const CalendarView = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ✅ Fetch matches from API
   const fetchMatchesForDate = async (date) => {
     try {
       setLoading(true);
       setError(null);
-
       const formattedDate = format(date, "yyyy-MM-dd");
       const response = await fetch(
-         `/.netlify/functions/football?endpoint=${encodeURIComponent(`/fixtures?date=${formattedDate}`)}`
+        `/.netlify/functions/football?endpoint=${encodeURIComponent(`/fixtures?date=${formattedDate}`)}`
       );
-
-      if (!response.ok) {
-        throw new Error(`API request failed: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
       const data = await response.json();
-
-      // ✅ Normalize API response
-      const fetchedMatches = (data.response || []).map((item) => ({
-        id: item.fixture?.id,
-        homeTeam: item.teams?.home?.name,
-        awayTeam: item.teams?.away?.name,
-        homeScore: item.goals?.home,
-        awayScore: item.goals?.away,
-        status: item.fixture?.status?.short,
-        league: item.league?.name,
-        date: item.fixture?.date,
-      }));
-
-      setMatches(fetchedMatches);
+      // ✅ Keep raw fixture objects so MatchCard works fully
+      setMatches(Array.isArray(data.response) ? data.response : []);
     } catch (err) {
       console.error("Error fetching matches:", err);
       setError("Failed to load matches. Please try again later.");
@@ -48,16 +31,15 @@ const CalendarView = () => {
     }
   };
 
-  // 🔁 Fetch when date changes
   useEffect(() => {
     fetchMatchesForDate(selectedDate);
   }, [selectedDate]);
 
-  // 🏆 Group matches by league
-  const matchesByLeague = matches.reduce((acc, match) => {
-    const league = match.league || "Other";
+  // Group raw fixtures by league name
+  const matchesByLeague = matches.reduce((acc, fixture) => {
+    const league = fixture.league?.name || "Other";
     if (!acc[league]) acc[league] = [];
-    acc[league].push(match);
+    acc[league].push(fixture);
     return acc;
   }, {});
 
@@ -83,20 +65,20 @@ const CalendarView = () => {
 
         {!loading && !error && matches.length > 0 ? (
           <div className="leagues-matches">
-            {Object.entries(matchesByLeague).map(([league, leagueMatches]) => (
+            {Object.entries(matchesByLeague).map(([league, leagueFixtures]) => (
               <div key={league} className="league-group">
                 <h3 className="league-header">{league}</h3>
                 <div className="matches-list">
-                  {leagueMatches.map((match) => (
-                    <MatchCard key={match.id} {...match} />
+                  {/* ✅ Pass full fixture object — enables team navigation & all features */}
+                  {leagueFixtures.map((fixture) => (
+                    <MatchCard key={fixture.fixture.id} fixture={fixture} />
                   ))}
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          !loading &&
-          !error && (
+          !loading && !error && (
             <div className="no-matches">
               <p>No matches found for this date</p>
             </div>

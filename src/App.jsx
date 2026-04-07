@@ -12,6 +12,7 @@ import Favorites from "./Pages/Favorites";
 import MatchDetails from "./Pages/MatchDetails";
 import TeamDetails from "./Pages/TeamDetails"; 
 import LeagueDetails from "./Pages/LeagueDetails";
+import Search from "./Pages/Search";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/match/:id" element={<MatchDetails />} />
           <Route path="/team/:id" element={<TeamDetails />} />
           <Route path="/league/:id" element={<LeagueDetails />} />
+          <Route path="/search" element={<Search />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
